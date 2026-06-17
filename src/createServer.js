@@ -73,6 +73,10 @@ function createServer() {
   app.delete('/users/:id', (req, res) => {
     const id = Number(req.params.id);
 
+    if (!id) {
+      return res.status(400).send('Invalid user ID');
+    }
+
     const userIndex = users.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
@@ -189,7 +193,7 @@ function createServer() {
     const expenseIndex = expenses.findIndex((e) => e.id === id);
 
     if (expenseIndex === -1) {
-      return res.status(404).send('Not found');
+      return res.status(404).send('Expense not found');
     }
 
     expenses.splice(expenseIndex, 1);
