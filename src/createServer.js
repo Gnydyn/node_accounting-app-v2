@@ -7,15 +7,15 @@ function createServer() {
 
   app.use(express.json());
 
-  const users = [];
+  const accounts = [];
   const expenses = [];
-  let nextUserId = 1;
+  let nextAccountId = 1;
   let nextExpenseId = 1;
 
   // USERS
 
   app.get('/users', (req, res) => {
-    res.json(users);
+    res.json(accounts);
   });
 
   app.post('/users', (req, res) => {
@@ -26,11 +26,11 @@ function createServer() {
     }
 
     const user = {
-      id: nextUserId++,
+      id: nextAccountId++,
       name,
     };
 
-    users.push(user);
+    accounts.push(user);
 
     res.status(201).json(user);
   });
@@ -42,7 +42,7 @@ function createServer() {
       return res.status(400).send('Invalid user ID');
     }
 
-    const user = users.find((u) => u.id === id);
+    const user = accounts.find((u) => u.id === id);
 
     if (!user) {
       return res.status(404).send('User not found');
@@ -59,7 +59,7 @@ function createServer() {
       return res.status(400).send('Invalid user ID or name');
     }
 
-    const user = users.find((u) => u.id === id);
+    const user = accounts.find((u) => u.id === id);
 
     if (!user) {
       return res.status(404).send('User not found');
@@ -77,13 +77,13 @@ function createServer() {
       return res.status(400).send('Invalid user ID');
     }
 
-    const userIndex = users.findIndex((u) => u.id === id);
+    const userIndex = accounts.findIndex((u) => u.id === id);
 
     if (userIndex === -1) {
       return res.status(404).send('User not found');
     }
 
-    users.splice(userIndex, 1);
+    accounts.splice(userIndex, 1);
     res.sendStatus(204);
   });
 
@@ -130,12 +130,10 @@ function createServer() {
       return res.status(400).send('Invalid expense data');
     }
 
-    const user = users.find((u) => u.id === Number(userId));
+    const account = accounts.find((a) => a.id === Number(userId));
 
-    if (!user) {
-      return res
-        .status(400)
-        .json({ message: 'User with given id does not exist' });
+    if (!account) {
+      return res.status(400).send('Account with given id does not exist');
     }
 
     const expense = {
@@ -172,8 +170,8 @@ function createServer() {
   app.patch('/expenses/:id', (req, res) => {
     const id = Number(req.params.id);
 
-    if (!id) {
-      return res.status(400).send('Invalid expense ID');
+    if (!id || !req.body) {
+      return res.status(400).send('Invalid expense ID or data');
     }
 
     const expense = expenses.find((e) => e.id === id);
